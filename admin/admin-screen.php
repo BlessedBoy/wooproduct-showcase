@@ -104,6 +104,16 @@ $rwps_options = array(
                         'default' => false,
                         'label' => __('Show Navigation Controls', 'my-test')
                     ),
+                    'prevText' => array(
+                        'default' => "Previous",
+                        'tip' => "Leave blank if you don't want to show any text",
+                        'label' => __('Text For Left Navigation Control', 'my-test')
+                    ),
+                    'nextText' => array(
+                        'default' => "Next",
+                        'tip' => "Leave blank if you don't want to show any text",
+                        'label' => __('Text For Left Navigation Control', 'my-test')
+                    ),
                 )
             ),
             'section_behav' => array(
