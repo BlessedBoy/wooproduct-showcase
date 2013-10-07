@@ -28,7 +28,8 @@ Copyright 2013  Reydel Leon  (email : nick.lucas.xxi@gmail.com)
 /**
  * Check if WooCommerce is active
  **/
-if ( !class_exists('Woocommerce') and !class_exists('WooProductShowcase') ) {
+if ( !class_exists('WooProductShowcase') ) {
+//  TODO Complete the checking for Woocommerce !class_exists('Woocommerce') and
 
     define('RWPS_PATH', WP_PLUGIN_URL . '/' . plugin_basename( dirname(__FILE__) ) . '/' );
     define('RWPS_NAME', "WooProducts Showcase");
@@ -91,7 +92,7 @@ if ( !class_exists('Woocommerce') and !class_exists('WooProductShowcase') ) {
         function rwps_script(){
 
             print '<script type="text/javascript" charset="utf-8">
-          jQuery(window).load(function() {
+          jQuery(document).ready(function() {
             jQuery(\'.flexslider\').flexslider({
                 animation: "'.synved_option_get('wooproduct_Showcase', 'animation').'",
                 minItems: '.synved_option_get('wooproduct_Showcase', 'minItems').',
@@ -114,25 +115,30 @@ if ( !class_exists('Woocommerce') and !class_exists('WooProductShowcase') ) {
 
             $slider= '<div class="flexslider"><ul class="slides">';
 
-            $rwps_query= "post_type=product";
-            query_posts($rwps_query);
+            $args = array(
+                'post_type' => 'product'
+            );
+            $loop = new WP_Query( $args );
 
+            if ( $loop->have_posts() ) {
+                while ( $loop->have_posts() ) : $loop->the_post();
+                    $img= get_the_post_thumbnail( $post->ID, 'large' );
+                    $price = get_post_meta( get_the_ID(), '_regular_price', true);
 
-            if (have_posts()) : while (have_posts()) : the_post();
-                $img= get_the_post_thumbnail( $post->ID, 'large' );
-                $price = get_post_meta( get_the_ID(), '_regular_price', true);
+                    $slider.='<li>
+                    <a href="'.get_permalink($product_id).'">'.$img.'</a>
+                    <div style="text-align: center;">'.get_the_title($product_id).'</div>
+                    </li>';
+                endwhile;
+            } else {
+                echo __( 'No products found' );
+            }
 
-                $slider.='<li>
-                <a href="'.get_permalink($product_id).'">'.$img.'</a>
-                <div style="text-align: center;">'.get_the_title($product_id).'</div>
-                </li>';
+            wp_reset_postdata();
 
-            endwhile; endif; wp_reset_query();
-            $slider.= '</ul>
-	</div>';
+            $slider.= '</ul></div>';
 
             return $slider;
-
         }
 
         /**add the shortcode for the slider for use in editor**/
